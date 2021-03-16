@@ -28,7 +28,7 @@ import sirttas.elementalcraft.api.element.ElementType;
 import sirttas.elementalcraft.interaction.jei.ingredient.ECIngredientTypes;
 import sirttas.elementalcraft.interaction.jei.ingredient.element.IngredientElementType;
 import sirttas.elementalcraft.item.ECItems;
-import sirttas.elementalcraft.item.ItemElemental;
+import sirttas.elementalcraft.item.elemental.ItemElemental;
 import sirttas.elementalcraft.tag.ECTags;
 
 public class EvaporationRecipeCategory implements IRecipeCategory<Ingredient> {
@@ -38,8 +38,8 @@ public class EvaporationRecipeCategory implements IRecipeCategory<Ingredient> {
 	private final IDrawable icon;
 	private final IDrawable background;
 	private final IDrawable overlay;
-	private final ItemStack evaporator = new ItemStack(ECItems.evaporator);
-	protected final List<ItemStack> tanks = Lists.newArrayList(new ItemStack(ECItems.tank), new ItemStack(ECItems.tankSmall));
+	private final ItemStack evaporator = new ItemStack(ECItems.EVAPORATOR);
+	protected final List<ItemStack> tanks = Lists.newArrayList(new ItemStack(ECItems.TANK), new ItemStack(ECItems.TANK_SMALL));
 
 	public EvaporationRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(99, 59);
@@ -120,19 +120,14 @@ public class EvaporationRecipeCategory implements IRecipeCategory<Ingredient> {
 		recipeLayout.getItemStacks().init(2, false, 30, 24);
 		recipeLayout.getItemStacks().set(2, evaporator);
 
-		recipeLayout.getIngredientsGroup(ECIngredientTypes.ELEMENT).init(2, true, 75, 40);
+		recipeLayout.getIngredientsGroup(ECIngredientTypes.ELEMENT).init(2, true, 75, 36);
 		recipeLayout.getIngredientsGroup(ECIngredientTypes.ELEMENT).set(2, ingredients.getOutputs(ECIngredientTypes.ELEMENT).get(0));
 
 	}
 
 	public static List<Ingredient> getShards() {
-		try {
-			return Lists.newArrayList(Ingredient.fromTag(ECTags.Items.FIRE_SHARDS), Ingredient.fromTag(ECTags.Items.WATER_SHARDS), Ingredient.fromTag(ECTags.Items.EARTH_SHARDS),
-					Ingredient.fromTag(ECTags.Items.AIR_SHARDS));
-		} catch (Exception e) { // FIXME jei bug: https://github.com/mezz/JustEnoughItems/issues/2177
-			return Lists.newArrayList(Ingredient.fromItems(ECItems.fireShard), Ingredient.fromItems(ECItems.waterShard), Ingredient.fromItems(ECItems.earthShard),
-					Ingredient.fromItems(ECItems.airShard));
-		}
+		return Lists.newArrayList(Ingredient.fromTag(ECTags.Items.FIRE_SHARDS), Ingredient.fromTag(ECTags.Items.WATER_SHARDS), Ingredient.fromTag(ECTags.Items.EARTH_SHARDS),
+				Ingredient.fromTag(ECTags.Items.AIR_SHARDS));
 	}
 
 }

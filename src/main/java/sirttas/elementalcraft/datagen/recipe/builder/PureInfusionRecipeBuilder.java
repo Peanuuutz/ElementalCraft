@@ -21,7 +21,7 @@ import sirttas.elementalcraft.ElementalCraft;
 import sirttas.elementalcraft.api.element.ElementType;
 import sirttas.elementalcraft.api.name.ECNames;
 import sirttas.elementalcraft.recipe.PureInfusionRecipe;
-import sirttas.elementalcraft.recipe.instrument.BindingRecipe;
+import sirttas.elementalcraft.recipe.instrument.binding.AbstractBindingRecipe;
 
 public class PureInfusionRecipeBuilder {
 	private final Item result;
@@ -66,11 +66,11 @@ public class PureInfusionRecipeBuilder {
 
 	public PureInfusionRecipeBuilder setIngredient(ElementType type, Ingredient ingredientIn) {
 		int index = type == ElementType.NONE ? 0 : 
-					type == ElementType.WATER ? 1 : // NOSONAR
-					type == ElementType.FIRE ? 2 : // NOSONAR
-					type == ElementType.EARTH ? 3 : // NOSONAR
-					type == ElementType.AIR ? 4 : // NOSONAR
-					-1; // NOSONAR
+					type == ElementType.WATER ? 1 :
+					type == ElementType.FIRE ? 2 :
+					type == ElementType.EARTH ? 3 :
+					type == ElementType.AIR ? 4 :
+					-1;
 
 		this.ingredients.set(index, ingredientIn);
 		return this;
@@ -87,7 +87,7 @@ public class PureInfusionRecipeBuilder {
 		if ((new ResourceLocation(save)).equals(resourcelocation)) {
 			throw new IllegalStateException("Binding Recipe " + save + " should remove its 'save' argument");
 		} else {
-			this.build(consumerIn, ElementalCraft.createRL(BindingRecipe.NAME + '/' + save));
+			this.build(consumerIn, ElementalCraft.createRL(AbstractBindingRecipe.NAME + '/' + save));
 		}
 	}
 
@@ -121,7 +121,10 @@ public class PureInfusionRecipeBuilder {
 			}
 
 			json.add(ECNames.INGREDIENTS, jsonarray);
-			json.addProperty(ECNames.OUTPUT, ForgeRegistries.ITEMS.getKey(this.output).toString());
+			JsonObject outputJson = new JsonObject();
+
+			outputJson.addProperty(ECNames.ITEM, ForgeRegistries.ITEMS.getKey(this.output).toString());
+			json.add(ECNames.OUTPUT, outputJson);
 		}
 
 		@Override

@@ -25,6 +25,8 @@ public class ECConfig {
 		CLIENT = clientPair.getLeft();
 	}
 
+	private ECConfig() {}
+	
 	public static class Common {
 		public final DoubleValue swordAirInfusionSpeedBonus;
 		public final DoubleValue leggingsAirInfusionSpeedBonus;
@@ -92,6 +94,9 @@ public class ECConfig {
 		public final DoubleValue crystallizerLuckRatio;
 		public final IntValue inscriberTransferSpeed;
 		public final IntValue inscriberMaxRunes;
+		public final IntValue airMillTransferSpeed;
+		public final IntValue airMillMaxRunes;
+		public final DoubleValue airMillLuckRatio;
 		public final IntValue purifierTransferSpeed;
 		public final IntValue purifierMaxRunes;
 		public final IntValue purifierDuration;
@@ -114,6 +119,7 @@ public class ECConfig {
 		public final IntValue pedestalMaxRunes;
 
 		public final IntValue receptacleDurability;
+		public final IntValue improvedReceptacleDurability;
 		public final BooleanValue receptacleEnchantable;
 		public final IntValue elementHolderCapacity;
 		public final IntValue elementHolderTransferAmount;
@@ -122,6 +128,7 @@ public class ECConfig {
 		public final BooleanValue playersSpawnWithBook;
 		public final IntValue shardElementAmount;
 		public final IntValue chiselDurability;
+		public final IntValue lenseElementMultiplier;
 
 		public final BooleanValue disableWorldGen;
 		public final BooleanValue disableInertCrystal;
@@ -129,7 +136,14 @@ public class ECConfig {
 		public final IntValue inertCrystalSize;
 		public final IntValue inertCrystalYMax;
 		public final IntValue sourceSpawnChance;
+		public final IntValue oceanSourceSpawnChance;
+		public final IntValue randomSourceSpawnChance;
 		public final IntValue sourceAltarDistance;
+
+		public final BooleanValue disableSourceExhaustion;
+		public final IntValue sourceCapacityMin;
+		public final IntValue sourceCapacityMax;
+		public final IntValue sourceRecoverRate;
 
 		public final BooleanValue mekanismInteracionEnabled;
 		public final DoubleValue mekanismPureOreDimishingAmount;
@@ -232,6 +246,10 @@ public class ECConfig {
 			builder.pop().push("inscriber");
 			inscriberTransferSpeed = builder.comment("The max amount of element consumed by the gem inscriber per tick.").defineInRange("inscriberTransferSpeed", 1000, 0, 10000);
 			inscriberMaxRunes = builder.comment("The max amount of on an inscriber.").defineInRange("inscriberMaxRunes", 3, 0, 10);
+			builder.pop().push("airMill");
+			airMillTransferSpeed = builder.comment("The max amount of element consumed by the Air Mill Grindstone per tick.").defineInRange("airMillTransferSpeed", 10, 0, 1000);
+			airMillMaxRunes = builder.comment("The max amount of on an Air Mill Grindstone.").defineInRange("airMillMaxRunes", 3, 0, 10);
+			airMillLuckRatio = builder.comment("The ratio of each luck rune on a Air Mill Grindstone.").defineInRange("airMillLuckRatio", 2D, 0D, 10D);
 			builder.pop().push("purifier");
 			purifierTransferSpeed = builder.comment("The max amount of element consumed by the Ore Purifier per tick.").defineInRange("purifierTransferSpeed", 25, 0, 1000);
 			purifierMaxRunes = builder.comment("The max amount of on an purifier.").defineInRange("purifierMaxRunes", 3, 0, 10);
@@ -260,15 +278,17 @@ public class ECConfig {
 			pedestalCapacity = builder.comment("The element capacity of a pedestal.").defineInRange("pedestalCapacity", 10000, 0, 100000000);
 
 			builder.pop(2).comment("Items config").push("items");
-			receptacleDurability = builder.comment("Define source receptacle durablility (0 for unbreakable).").defineInRange("receptacleDurability", 20, 0, 1000);
+			receptacleDurability = builder.comment("Define source receptacle durablility (0 for unbreakable).").defineInRange("receptacleDurability", 5, 0, 1000);
+			improvedReceptacleDurability = builder.comment("Define improved source receptacle durablility (0 for unbreakable).").defineInRange("improvedReceptacleDurability", 20, 0, 1000);
 			receptacleEnchantable = builder.comment("Define if or not receptacles can be enchanted.").define("receptacleEnchantable", false);
 			elementHolderCapacity = builder.comment("The element capacity of an element holder.").defineInRange("elementHolderCapacity", 10000, 0, 100000000);
 			elementHolderTransferAmount = builder.comment("The amount of element transfered by an element holder.").defineInRange("elementHolderTransferAmount", 25, 0, 1000);
 			focusMaxSpell = builder.comment("The max number of spells on a focus.").defineInRange("focusMaxSpell", 10, 1, 20);
 			spellBookMaxSpell = builder.comment("The max number of spells on an elementalist grimoire.").defineInRange("spellBookMaxSpell", 100, 1, 1000);
 			playersSpawnWithBook = builder.comment("Players start the game with an elementopedia in their inventory.").define("playersSpawnWithBook", false);
-			shardElementAmount = builder.comment("The amount of element contained in a single shard.").defineInRange("shardElementAmount", 100, 0, 1000);
+			shardElementAmount = builder.comment("The amount of element contained in a single shard.").defineInRange("shardElementAmount", 250, 0, 1000);
 			chiselDurability = builder.comment("Define chisel durablility (0 for unbreakable).").defineInRange("chiselDurability", 250, 0, 1000);
+			lenseElementMultiplier = builder.comment("the multiplier of lense (based on 1000)").defineInRange("lenseElementMultiplier", 100, 0, 100);
 			
 			builder.pop().comment("Worldgen config").push("worldgen");
 			disableWorldGen = builder.comment("Disable all elementalcraft world gen.").define("disableWorldGen", false);
@@ -278,13 +298,22 @@ public class ECConfig {
 			inertCrystalSize = builder.comment("Size of inert crystal vein.").defineInRange("inertCrystalSize", 9, 1, 100);
 			inertCrystalYMax = builder.comment("max Y level of inert crystal.").defineInRange("inertCrystalYMax", 64, 1, 256);
 			builder.pop();
-			sourceSpawnChance = builder.comment("Chance to add a source in world (the small the more frequante).").defineInRange("sourceSpawnChance", 20, 1, 10000);
-			sourceAltarDistance = builder.comment("CSource Altar genreration distance setting.").defineInRange("sourceAltarDistance", 16, 0, 100);
+			sourceSpawnChance = builder.comment("Chance to add a source in world (the small the more frequante).").defineInRange("sourceSpawnChance", 30, 1, 10000);
+			oceanSourceSpawnChance = builder.comment("Chance to add a source in an ocean biome (the small the more frequante).").defineInRange("oceanSourceSpawnChance", 150, 1, 10000);
+			randomSourceSpawnChance = builder.comment("Chance to add a source in world ingoring biome elemen type (the small the more frequante).").defineInRange("randomSourceSpawnChance", 300, 1,
+					10000);
+			sourceAltarDistance = builder.comment("CSource Altar genreration distance setting.").defineInRange("sourceAltarDistance", 64, 0, 100);
+
+			builder.pop().comment("Source config").push("source");
+			disableSourceExhaustion = builder.comment("set to true to make sources infinite.").define("disableSourceExhaustion", false);
+			sourceCapacityMin = builder.comment("The minimum element capacity of a source.").defineInRange("sourceCapacityMin", 500000, 0, 10000000);
+			sourceCapacityMax = builder.comment("The maximum element capacity of a source.").defineInRange("sourceCapacityMax", 1000000, 0, 10000000);
+			sourceRecoverRate = builder.comment("The element a source can generate per tick.").defineInRange("sourceRecoverRate", 5, 0, 100);
 
 			builder.pop().comment("mod interaction config").push("interaction").push("mekanism");
 			mekanismInteracionEnabled = builder.comment("Enable interaction with mekanism.").define("mekanismInteracionEnabled", true);
 			mekanismPureOreDimishingAmount = builder.comment("The dimishing amount multiplier when using pure ore in mekanism. it prevent an exploit.").defineInRange("mekanismPureOreDimishingAmount",
-					0.8D, 0, 1);
+					0.75D, 0, 1);
 			mekanismPureOreDissolutionRecipe = builder.comment("Set to false if you want pure ore to not use mekanism dissolution recipes.").define("mekanismPureOreDissolutionRecipe", true);
 			mekanismPureOreInjectingRecipe = builder.comment("Set to false if you want pure ore to not use mekanism injecting recipes.").define("mekanismPureOreInjectingRecipe", true);
 			mekanismPureOrePurifyingRecipe = builder.comment("Set to false if you want pure ore to not use mekanism purifying recipes.").define("mekanismPureOrePurifyingRecipe", true);

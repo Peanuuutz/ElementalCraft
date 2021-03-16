@@ -16,6 +16,8 @@ import net.minecraft.util.math.vector.Vector3d;
 
 public class EntityHelper {
 
+	private EntityHelper() {}
+	
 	public static Stream<ItemStack> handStream(PlayerEntity player) {
 		return Stream.of(player.getHeldItemMainhand(), player.getHeldItemOffhand());
 

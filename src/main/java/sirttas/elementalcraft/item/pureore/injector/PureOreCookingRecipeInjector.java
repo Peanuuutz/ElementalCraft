@@ -7,14 +7,14 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import sirttas.elementalcraft.ElementalCraft;
-import sirttas.elementalcraft.api.pureore.injector.PureOreRecipeInjector;
+import sirttas.elementalcraft.api.pureore.injector.AbstractPureOreRecipeInjector;
 
-public class PureOreCookingRecipeInjector<T extends AbstractCookingRecipe> extends PureOreRecipeInjector<IInventory, T> {
+public class PureOreCookingRecipeInjector<T extends AbstractCookingRecipe> extends AbstractPureOreRecipeInjector<IInventory, T> {
 
 	private final Factory<T> factory;
 
 	public PureOreCookingRecipeInjector(IRecipeType<T> recipeType, Factory<T> factory) {
-		super(recipeType);
+		super(recipeType, false);
 		this.factory = factory;
 	}
 

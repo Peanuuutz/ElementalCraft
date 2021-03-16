@@ -16,6 +16,7 @@ import sirttas.elementalcraft.spell.SpellHelper;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ElementalCraft.MODID)
 public class InputHandler {
 
+	private InputHandler() {}
 	
 	@SuppressWarnings("resource")
 	@SubscribeEvent
@@ -23,7 +24,7 @@ public class InputHandler {
 		ClientPlayerEntity player = Minecraft.getInstance().player;
 		
 		if (player.isSneaking()) {
-			EntityHelper.handStream(player).filter(i -> i.getItem() == ECItems.focus).findFirst().ifPresent(i -> {
+			EntityHelper.handStream(player).filter(i -> i.getItem() == ECItems.FOCUS).findFirst().ifPresent(i -> {
 				if (event.getScrollDelta() > 0) {
 					handleFocusScroll(player, i, -1);
 					ECMessage.SCROLL_BACKWORD.send();

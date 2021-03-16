@@ -8,20 +8,22 @@ import java.util.stream.IntStream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IGrowable;
+import net.minecraft.block.StemBlock;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.ObjectHolder;
 import sirttas.elementalcraft.ElementalCraft;
 import sirttas.elementalcraft.api.element.ElementType;
-import sirttas.elementalcraft.block.shrine.TileShrine;
+import sirttas.elementalcraft.block.shrine.AbstractTileShrine;
 import sirttas.elementalcraft.block.shrine.upgrade.ShrineUpgrades;
 import sirttas.elementalcraft.config.ECConfig;
 
-public class TileGrowthShrine extends TileShrine {
+public class TileGrowthShrine extends AbstractTileShrine {
 
-	@ObjectHolder(ElementalCraft.MODID + ":" + BlockGrowthShrine.NAME) public static TileEntityType<TileGrowthShrine> TYPE;
+	@ObjectHolder(ElementalCraft.MODID + ":" + BlockGrowthShrine.NAME) public static final TileEntityType<TileGrowthShrine> TYPE = null;
 
 	private static final Properties PROPERTIES = Properties.create(ElementType.WATER).periode(ECConfig.COMMON.growthShrinePeriode.get()).consumeAmount(ECConfig.COMMON.growthShrineConsumeAmount.get())
 			.range(ECConfig.COMMON.growthShrineRange.get());
@@ -39,6 +41,15 @@ public class TileGrowthShrine extends TileShrine {
 		return positions.isEmpty() ? Optional.empty() : Optional.of(positions.get(this.world.rand.nextInt(positions.size())));
 	}
 
+	private boolean stemCanGrow(StemBlock stem) {
+		if (this.hasUpgrade(ShrineUpgrades.STEM_POLLINATION)) {
+			Block crop = stem.getCrop();
+			
+			return Direction.Plane.HORIZONTAL.getDirectionValues().map( d -> world.getBlockState(pos.offset(d))).noneMatch(state -> state.matchesBlock(crop));
+		}
+		return false;
+	}
+	
 	private boolean canGrow(BlockPos pos) {
 		BlockState blockstate = world.getBlockState(pos);
 		Block block = blockstate.getBlock();
@@ -46,7 +57,8 @@ public class TileGrowthShrine extends TileShrine {
 		if (block instanceof IGrowable) {
 			IGrowable igrowable = (IGrowable) block;
 
-			return igrowable.canGrow(world, pos, blockstate, world.isRemote) && (igrowable.canUseBonemeal(world, world.rand, pos, blockstate) || this.hasUpgrade(ShrineUpgrades.bonelessGrowth));
+			return (igrowable.canGrow(world, pos, blockstate, world.isRemote) && (igrowable.canUseBonemeal(world, world.rand, pos, blockstate) || this.hasUpgrade(ShrineUpgrades.BONELESS_GROWTH)))
+					|| (block instanceof StemBlock && stemCanGrow((StemBlock) block));
 		}
 		return false;
 	}
